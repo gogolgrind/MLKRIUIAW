@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Alpha</title>
+
+<link rel="stylesheet" href="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/2.2.0/jquery.min.js"></script>
+<script src="http://maxcdn.bootstrapcdn.com/bootstrap/3.3.5/js/bootstrap.min.js"></script>
+<script src="https://rawgit.com/omkarkhair/jsonTable/master/jsonTable.js"></script>
+
+<style type="text/css">
+    .bs-example{
+    	margin: 20px;
+    }
+</style>
+
+</head>
+
+<body>
+
+<div class="container">
+    
+    <div class="row">
+        <div class="form-group">        
+            <div class="col-sm-offset-2 col-sm-10">
+                <p></p>
+                    <a href="/describe" class="btn  btn-primary btn-block btn-success" role="button" id = "btn_describe">Data description</a>
+                <p></p>
+
+                <p></p>
+                    <button class="btn btn-primary btn-block" id = "btn_show_train">Show train data</button>
+                <p></p>
+
+                <p></p>
+                    <button class="btn btn-primary btn-block" id = "btn_show_test">Show test data</button>
+                <p></p>
+
+                <p></p>
+                 <div class="dropdown">
+                      <button class="btn btn-primary btn-block dropdown-toggle" id = "btn_select_model" type="button" data-toggle="dropdown">Select model
+                      <span class="caret"></span></button>
+                          <ul class="dropdown-menu col-xs-12" role="menu" aria-labelledby="dLabel">
+                                </li><form action = "/select_model" method = "post">
+                                    <input type="submit" name="clf" value="KNN" class="btn btn-info" role="button" />
+                                    <input type="submit" name="clf" value="DT" class="btn btn-info" role="button" />
+                                    <input type="text" value = '1' name="param1" class="form-control" id="n_neighbors" placeholder ="N neighbors or Max depth">
+                                </form></li>
+                                          
+                                
+                          </ul>
+                </div>
+                <p></p>
+        
+                <p></p>
+                    <a href="/train_pred" class="btn  btn-primary btn-block btn-success" role="button" id = "btn_train_pred">Train and Predict</a>
+                <p></p>
+
+                <p></p>
+                    <button class="btn btn-primary btn-block" id = "btn_show_res">Show results of classification</button>
+                <p></p>
+
+                <p></p>
+                <p></p>        
+            </div>
+
+        </div>
+        <div class="row"> <table class="table table-bordered table-striped" id="table"></table> </div>
+    </div>
+ </div>
+<script type="text/javascript">
+    $(document).ready(function() {
+        var show_table = function(event) {
+            $("#table").empty();
+            var url = event.data.param1;
+            var resp = $.getJSON(url,function(data) {
+                var col = []
+                // generate headers of table
+                $.each(data[0],function(key,val) {
+                    col.push(key); 
+                });
+                var options = {
+                    source: data,
+                    rowClass: "item",
+                    callback: function(){
+                        console.log(data.length);
+                    }
+                };
+                $("#table").jsonTable({
+                    head : col,
+                    json : col
+                });
+                $("#table").jsonTableUpdate(options);
+                $("tr.item").each(function() {
+                    var row = (this);
+                    var row_id = row.cells[0].innerHTML;
+                    
+                });
+            }); 
+        }
+
+        $("#btn_show_res").hide();
+        $("#btn_train_pred").hide();
+        $("#btn_train_pred").click(function () {
+           $("#btn_show_res").show();
+         });
+        $("#btn_select_model").click(function () {
+           $("#btn_train_pred").show();   
+        });
+        $("#btn_show_test").click({param1: "/show_test"},show_table);
+        $("#btn_show_train").click({param1: "/show_train"},show_table);
+        $("#btn_show_res").click({param1: "/show_res"},show_table);
+    });
+</script>
+</body>
+</html>     
